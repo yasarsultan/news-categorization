@@ -1,4 +1,5 @@
-from extract import Session, parse_feed
+from parser import parse_feed
+from db_model import Article, Session
 
 RSS_FEEDS = [
     'http://rss.cnn.com/rss/cnn_topstories.rss',
@@ -12,9 +13,12 @@ RSS_FEEDS = [
 
 def main():
     session = Session()
+    
     for feed in RSS_FEEDS:
-        parse_feed(feed, session)
+        parse_feed(feed, Article, session)
 
     session.close()
 
-main()
+
+if __name__ == '__main__':
+    main()
