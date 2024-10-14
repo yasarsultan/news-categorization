@@ -10,12 +10,18 @@ username = os.getenv('POSTGRESQL_USER')
 password = os.getenv('POSTGRESQL_PASSWORD')
 host = os.getenv('POSTGRESQL_HOST')
 
-engine = create_engine(f'postgresql://{username}:{password}@{host}/feedsdb')
+engine = create_engine(f'postgresql://{username}:{password}@{host}/feedsdb',
+                       connect_args={
+                            "keepalives": 1,
+                            "keepalives_idle": 30,
+                            "keepalives_interval": 10,
+                            "keepalives_count": 5,
+                        })
 
 Base = declarative_base()
 
 class Article(Base):
-    __tablename__ = 'rss_feed'
+    __tablename__ = 'rss_feeds'
     title = Column(Text, nullable=False)
     content = Column(Text, nullable=False)
     publication_date = Column(DateTime)

@@ -34,7 +34,6 @@ def parse_feed(feed_url, table_class, db_session):
 
         db_session.add(article)
         db_session.commit()
-
         classify_and_store.delay(article.link)
 
     print(f"Finished parsing {feed_url}")

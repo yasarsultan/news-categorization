@@ -18,11 +18,8 @@ category3 = {'disaster', 'earthquake', 'flood', 'hurricane'}
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
 
-session = Session()
-
 
 def preprocess_text(text):
-    print("Preprocessing")
     tokens = word_tokenize(text.lower())
     tokens = [lemmatizer.lemmatize(token) for token in tokens if token.isalnum()]
     tokens = [token for token in tokens if token not in stop_words]
@@ -32,8 +29,7 @@ def preprocess_text(text):
 
 def categorize_article(title, content):
     preprocessed_text = preprocess_text(title + ' ' + content)
-    
-    print("Categorizing")
+
     # Simple rule-based categorization
     if any(word in preprocessed_text for word in category1):
         return 'Terrorism/Protest/PoliticalUnrest/Riot'
@@ -47,13 +43,15 @@ def categorize_article(title, content):
 
 @app.task
 def classify_and_store(article_id):
-    article = session.query(Article).filter_by(article_id)
+    session = Session()
+    article = session.get(Article, article_id)
     if not article:
         return
     
     result = categorize_article(article.title, article.content)
     article.category = result
-    session.commit()    
+    session.commit()
+    session.close()
 
 
 
